@@ -4,7 +4,9 @@ public enum BrickColor
 {
     Green,
     Purple,
-    Yellow
+    Yellow,
+    Blue
+   
 }
 
 public class BrickPoint : MonoBehaviour

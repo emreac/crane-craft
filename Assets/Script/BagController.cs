@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using DG;
+using DG.Tweening;
 public class BagController : MonoBehaviour
 {
     public GameObject purpleLayer;
@@ -12,6 +13,7 @@ public class BagController : MonoBehaviour
     private List<BrickPoint> greenBricks = new List<BrickPoint>();
     private List<BrickPoint> purpleBricks = new List<BrickPoint>();
     private List<BrickPoint> yellowBricks = new List<BrickPoint>();
+    private List<BrickPoint> blueBricks = new List<BrickPoint>();
     private int currentLayer = 0; // 0 for green layer, 1 for purple layer, 2 for yellow layer
 
     private void Start()
@@ -31,6 +33,10 @@ public class BagController : MonoBehaviour
             else if (brickPoint.brickColor == BrickColor.Yellow)
             {
                 yellowBricks.Add(brickPoint);
+            }
+            else if (brickPoint.brickColor == BrickColor.Blue)
+            {
+                blueBricks.Add(brickPoint);
             }
         }
 
@@ -83,14 +89,16 @@ public class BagController : MonoBehaviour
     {
         return (currentLayer == 0 && greenBricks.Contains(brickPoint)) ||
                (currentLayer == 1 && purpleBricks.Contains(brickPoint)) ||
-               (currentLayer == 2 && yellowBricks.Contains(brickPoint));
+               (currentLayer == 2 && yellowBricks.Contains(brickPoint)) ||
+               (currentLayer == 3 && blueBricks.Contains(brickPoint));
     }
 
     private void CheckLayerCompletion()
     {
         List<BrickPoint> currentLayerBricks = currentLayer == 0 ? greenBricks :
                                               currentLayer == 1 ? purpleBricks :
-                                              yellowBricks;
+                                              currentLayer == 2 ? yellowBricks :
+                                              blueBricks;
 
         bool layerComplete = true;
         foreach (BrickPoint brickPoint in currentLayerBricks)
@@ -110,15 +118,25 @@ public class BagController : MonoBehaviour
             // Activate the next layer if available
             if (currentLayer == 1 && purpleBricks.Count > 0)
             {
+
+                DOTween.Restart("FadeInPurple");
                 ActivateLayer(purpleBricks);
+               
             }
             else if (currentLayer == 2 && yellowBricks.Count > 0)
             {
+                DOTween.Restart("FadeInYellow");
+                ActivateLayer(yellowBricks);
+            }
+            else if (currentLayer == 3 && blueBricks.Count > 0)
+            {
+                DOTween.Restart("FadeInBlue");
                 ActivateLayer(yellowBricks);
             }
 
             // Optionally: Notify that all layers are complete if needed
-            if (currentLayer > 2)
+            //increase based on last layer number!
+            if (currentLayer > 3)
             {
                 AllLayersCompleted();
             }
