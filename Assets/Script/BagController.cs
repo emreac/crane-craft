@@ -4,6 +4,10 @@ using DG;
 using DG.Tweening;
 public class BagController : MonoBehaviour
 {
+    public GameObject confetti;
+
+    public CameraSwitcher CameraSwitcher;
+
     public GameObject purpleLayer;
 
     [SerializeField] private Transform bag;
@@ -147,6 +151,9 @@ public class BagController : MonoBehaviour
     {
         // Optional: Add logic for when all layers are completed
         Debug.Log("All layers have been completed!");
+        DOTween.Restart("BlueBuilding");
+        confetti.SetActive(true);
+        CameraSwitcher.PerformCameraAction();
         // You can trigger any additional logic or events here
     }
 
