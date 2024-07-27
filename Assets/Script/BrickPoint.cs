@@ -5,7 +5,8 @@ public enum BrickColor
     Green,
     Purple,
     Yellow,
-    Blue
+    Blue,
+    Orange
    
 }
 

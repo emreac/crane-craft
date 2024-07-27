@@ -4,10 +4,12 @@ using DG;
 using DG.Tweening;
 public class BagController : MonoBehaviour
 {
+    //Colectible Brick And Paint
+    [SerializeField] private GameObject brickCollectible;
+    [SerializeField] private GameObject paintCollectible;
+
     public GameObject confetti;
-
     public CameraSwitcher CameraSwitcher;
-
     public GameObject purpleLayer;
 
     [SerializeField] private Transform bag;
@@ -18,6 +20,7 @@ public class BagController : MonoBehaviour
     private List<BrickPoint> purpleBricks = new List<BrickPoint>();
     private List<BrickPoint> yellowBricks = new List<BrickPoint>();
     private List<BrickPoint> blueBricks = new List<BrickPoint>();
+    private List<BrickPoint> orangeBricks = new List<BrickPoint>();
     private int currentLayer = 0; // 0 for green layer, 1 for purple layer, 2 for yellow layer
 
     private void Start()
@@ -41,6 +44,10 @@ public class BagController : MonoBehaviour
             else if (brickPoint.brickColor == BrickColor.Blue)
             {
                 blueBricks.Add(brickPoint);
+            }
+            else if (brickPoint.brickColor == BrickColor.Orange)
+            {
+                orangeBricks.Add(brickPoint);
             }
         }
 
@@ -94,7 +101,8 @@ public class BagController : MonoBehaviour
         return (currentLayer == 0 && greenBricks.Contains(brickPoint)) ||
                (currentLayer == 1 && purpleBricks.Contains(brickPoint)) ||
                (currentLayer == 2 && yellowBricks.Contains(brickPoint)) ||
-               (currentLayer == 3 && blueBricks.Contains(brickPoint));
+               (currentLayer == 3 && blueBricks.Contains(brickPoint)) ||
+               (currentLayer == 4 && orangeBricks.Contains(brickPoint));
     }
 
     private void CheckLayerCompletion()
@@ -102,7 +110,8 @@ public class BagController : MonoBehaviour
         List<BrickPoint> currentLayerBricks = currentLayer == 0 ? greenBricks :
                                               currentLayer == 1 ? purpleBricks :
                                               currentLayer == 2 ? yellowBricks :
-                                              blueBricks;
+                                              currentLayer == 3 ? blueBricks :
+                                              orangeBricks;
 
         bool layerComplete = true;
         foreach (BrickPoint brickPoint in currentLayerBricks)
@@ -135,12 +144,30 @@ public class BagController : MonoBehaviour
             else if (currentLayer == 3 && blueBricks.Count > 0)
             {
                 DOTween.Restart("FadeInBlue");
-                ActivateLayer(yellowBricks);
+                ActivateLayer(blueBricks);
+  
+
+            }
+            else if (currentLayer == 4 && orangeBricks.Count > 0)
+            {
+                brickCollectible.SetActive(false);
+                paintCollectible.SetActive(true);
+
+                while (productDataList.Count > 0)
+                {
+                    int lastIndex = productDataList.Count - 1;  // Get the index of the last item
+                    GameObject itemToDestroy = bag.transform.GetChild(lastIndex).gameObject;  // Get the last item's GameObject
+                    Destroy(itemToDestroy);  // Destroy the GameObject
+                    productDataList.RemoveAt(lastIndex);  // Remove the item from the list
+                }
+            
+                DOTween.Restart("FadeInOrange");
+                ActivateLayer(orangeBricks);
             }
 
             // Optionally: Notify that all layers are complete if needed
             //increase based on last layer number!
-            if (currentLayer > 3)
+            if (currentLayer > 4)
             {
                 AllLayersCompleted();
             }
