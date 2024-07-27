@@ -2,8 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG;
 using DG.Tweening;
+using TMPro;
 public class BagController : MonoBehaviour
 {
+    [SerializeField] private GameObject crane;
+    [SerializeField] TextMeshProUGUI maxText;
+    int maxBagCapacity;
     //Colectible Brick And Paint
     [SerializeField] private GameObject brickCollectible;
     [SerializeField] private GameObject paintCollectible;
@@ -25,6 +29,7 @@ public class BagController : MonoBehaviour
 
     private void Start()
     {
+        maxBagCapacity = 9;
         // Find all BrickPoints and organize them by color or layer
         BrickPoint[] brickPoints = FindObjectsOfType<BrickPoint>();
         foreach (BrickPoint brickPoint in brickPoints)
@@ -92,6 +97,7 @@ public class BagController : MonoBehaviour
                     // Check if the current layer is fully activated
                     CheckLayerCompletion();
                 }
+                ControlBagCapacity();
             }
         }
     }
@@ -176,6 +182,17 @@ public class BagController : MonoBehaviour
 
     private void AllLayersCompleted()
     {
+        //Clear Bag
+        while (productDataList.Count > 0)
+        {
+            int lastIndex = productDataList.Count - 1;  // Get the index of the last item
+            GameObject itemToDestroy = bag.transform.GetChild(lastIndex).gameObject;  // Get the last item's GameObject
+            Destroy(itemToDestroy);  // Destroy the GameObject
+            productDataList.RemoveAt(lastIndex);  // Remove the item from the list
+        }
+
+        paintCollectible.SetActive(false);
+        crane.SetActive(false);
         // Optional: Add logic for when all layers are completed
         Debug.Log("All layers have been completed!");
         DOTween.Restart("BlueBuilding");
@@ -186,6 +203,11 @@ public class BagController : MonoBehaviour
 
     public void AddProductToBag(ProductData productData)
     {
+        if (!IsEmptySpace())
+        {
+            return;
+        }
+
         GameObject boxProduct = Instantiate(productData.productPrefab, Vector3.zero, Quaternion.identity);
         boxProduct.transform.SetParent(bag, true);
 
@@ -203,6 +225,7 @@ public class BagController : MonoBehaviour
 
         // Stack List
         productDataList.Add(productData);
+        ControlBagCapacity();
     }
 
     private float CalculateNewYPositionOfBox()
@@ -219,5 +242,42 @@ public class BagController : MonoBehaviour
             MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
             productSize = renderer.bounds.size / 2;
         }
+    }
+
+    private void ControlBagCapacity()
+    {
+        if(productDataList.Count == maxBagCapacity)
+        {
+            SetMaxTextOn();
+        }
+        else
+        {
+            SetMaxTextOff();
+        }
+    }
+    private void SetMaxTextOn()
+    {
+        if (!maxText.isActiveAndEnabled)
+        {
+            maxText.gameObject.SetActive(true);
+        }
+  
+
+    }
+    private void SetMaxTextOff()
+    {
+        if (maxText.isActiveAndEnabled)
+        {
+            maxText.gameObject.SetActive(false);
+        }
+    
+    }
+    public bool IsEmptySpace()
+    {
+        if(productDataList.Count < maxBagCapacity)
+        {
+            return true;
+        }
+        return false;
     }
 }
