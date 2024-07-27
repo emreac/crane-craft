@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3216229334316397119}
   m_Layer: 6
   m_Name: BrickPointOrange
-  m_TagString: BrickPoint
+  m_TagString: PaintPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    public MachineSoundController machineSoundController;
+
     public VariableJoystick joystick;
     public CharacterController controller;
 
@@ -53,10 +56,11 @@ public class PlayerController : MonoBehaviour
 
             if (movementDirection.sqrMagnitude <= 0)
             {
+                machineSoundController.StopMachine();
                 walking = false;
                 return;
             }
-
+            machineSoundController.StartMachine();
             walking = true;
             var targetDirection = Vector3.RotateTowards(controller.transform.forward, movementDirection, rotationSpeed * Time.deltaTime, 0f);
             controller.transform.rotation = Quaternion.LookRotation(targetDirection);
@@ -65,9 +69,11 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateYPosition(float value)
     {
+        machineSoundController.hyrodlicSound.Play();
         // Move the character controller vertically
         var movement = new Vector3(0, value - transform.position.y, 0);
         controller.Move(movement);
+      
     }
 }
 

@@ -24,6 +24,7 @@ public class ProductBrickController : MonoBehaviour
     {
         if (other.CompareTag("Player") && isReadyToPick)
         {
+            SoundManager.instance.PlayAudio(AudioClipType.collectClip);
             bagController = other.GetComponent<BagController>();
             bagController.AddProductToBag(bagGO);
             

@@ -5,7 +5,12 @@ using DG.Tweening;
 using TMPro;
 public class BagController : MonoBehaviour
 {
+    public MachineSoundController machineSoundController;
+
+    //Crane
     [SerializeField] private GameObject crane;
+    [SerializeField] private GameObject sliderCrane;
+
     [SerializeField] TextMeshProUGUI maxText;
     int maxBagCapacity;
     //Colectible Brick And Paint
@@ -86,6 +91,30 @@ public class BagController : MonoBehaviour
                 // Ensure the brick point belongs to the current layer
                 if (IsBrickInCurrentLayer(brickPoint) && productDataList.Count > 0)
                 {
+                    SoundManager.instance.PlayAudio(AudioClipType.putClip);
+                    // Remove one item from the bag
+                    int lastIndex = productDataList.Count - 1;
+                    Destroy(bag.transform.GetChild(lastIndex).gameObject);
+                    productDataList.RemoveAt(lastIndex);
+
+                    // Enable the BrickPoint mesh renderer
+                    brickPoint.EnableMeshRenderer();
+
+                    // Check if the current layer is fully activated
+                    CheckLayerCompletion();
+                }
+                ControlBagCapacity();
+            }
+        }
+        else if (other.CompareTag("PaintPoint"))
+        {
+            BrickPoint brickPoint = other.GetComponent<BrickPoint>();
+            if (brickPoint != null && !brickPoint.IsEnabled)
+            {
+                // Ensure the brick point belongs to the current layer
+                if (IsBrickInCurrentLayer(brickPoint) && productDataList.Count > 0)
+                {
+                    SoundManager.instance.PlayAudio(AudioClipType.paintClip);
                     // Remove one item from the bag
                     int lastIndex = productDataList.Count - 1;
                     Destroy(bag.transform.GetChild(lastIndex).gameObject);
@@ -137,25 +166,27 @@ public class BagController : MonoBehaviour
             // Activate the next layer if available
             if (currentLayer == 1 && purpleBricks.Count > 0)
             {
-
+                SoundManager.instance.PlayAudio(AudioClipType.doneClip);
                 DOTween.Restart("FadeInPurple");
                 ActivateLayer(purpleBricks);
                
             }
             else if (currentLayer == 2 && yellowBricks.Count > 0)
             {
+                SoundManager.instance.PlayAudio(AudioClipType.doneClip);
                 DOTween.Restart("FadeInYellow");
                 ActivateLayer(yellowBricks);
             }
             else if (currentLayer == 3 && blueBricks.Count > 0)
             {
+                SoundManager.instance.PlayAudio(AudioClipType.doneClip);
                 DOTween.Restart("FadeInBlue");
                 ActivateLayer(blueBricks);
-  
 
             }
             else if (currentLayer == 4 && orangeBricks.Count > 0)
             {
+                SoundManager.instance.PlayAudio(AudioClipType.doneClip);
                 brickCollectible.SetActive(false);
                 paintCollectible.SetActive(true);
 
@@ -182,6 +213,9 @@ public class BagController : MonoBehaviour
 
     private void AllLayersCompleted()
     {
+        sliderCrane.SetActive(false);
+        machineSoundController.StopMachine();
+        SoundManager.instance.PlayAudio(AudioClipType.winClip);
         //Clear Bag
         while (productDataList.Count > 0)
         {
