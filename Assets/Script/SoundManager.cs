@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum AudioClipType { collectClip,putClip,doneClip,winClip,paintClip}
+public enum AudioClipType { collectClip,putClip,doneClip,winClip,paintClip,cashClip}
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager instance;
@@ -12,6 +12,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip doneClip;
     public AudioClip winClip;
     public AudioClip paintClip;
+    public AudioClip cashClip;
 
     private void Awake()
     {
@@ -47,6 +48,11 @@ public class SoundManager : MonoBehaviour
             else if (clipType == AudioClipType.paintClip)
             {
                 audioClip = paintClip;
+
+            }
+            else if (clipType == AudioClipType.cashClip)
+            {
+                audioClip = cashClip;
             }
 
             audioSource.PlayOneShot(audioClip,0.6f);

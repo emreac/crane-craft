@@ -3,8 +3,14 @@ using UnityEngine;
 using DG;
 using DG.Tweening;
 using TMPro;
+using System.Collections;
 public class BagController : MonoBehaviour
 {
+    //UI Canvas
+    [SerializeField] private GameObject tutorLiftUI;
+    [SerializeField] private UIManager uiManager;
+
+    public MoneyManager MoneyManager;
     public MachineSoundController machineSoundController;
 
     //Crane
@@ -167,28 +173,49 @@ public class BagController : MonoBehaviour
             if (currentLayer == 1 && purpleBricks.Count > 0)
             {
                 SoundManager.instance.PlayAudio(AudioClipType.doneClip);
+                SoundManager.instance.PlayAudio(AudioClipType.cashClip);
                 DOTween.Restart("FadeInPurple");
+                DOTween.Restart("MoneyAnimation");
                 ActivateLayer(purpleBricks);
-               
+                MoneyManager.AddMoney(1000);
+                MoneyManager.UpdateMoneyUI();
+
+
             }
             else if (currentLayer == 2 && yellowBricks.Count > 0)
             {
+
+                
+                StartCoroutine(DeleteTutorUI());
+                tutorLiftUI.SetActive(true);
                 SoundManager.instance.PlayAudio(AudioClipType.doneClip);
+                SoundManager.instance.PlayAudio(AudioClipType.cashClip);
+                DOTween.Restart("MoneyAnimation");
                 DOTween.Restart("FadeInYellow");
                 ActivateLayer(yellowBricks);
+                MoneyManager.AddMoney(1000);
+                MoneyManager.UpdateMoneyUI();
+
             }
             else if (currentLayer == 3 && blueBricks.Count > 0)
             {
                 SoundManager.instance.PlayAudio(AudioClipType.doneClip);
+                SoundManager.instance.PlayAudio(AudioClipType.cashClip);
                 DOTween.Restart("FadeInBlue");
+                DOTween.Restart("MoneyAnimation");
                 ActivateLayer(blueBricks);
-
+                MoneyManager.AddMoney(1000);
+                MoneyManager.UpdateMoneyUI();
             }
             else if (currentLayer == 4 && orangeBricks.Count > 0)
             {
+                DOTween.Restart("MoneyAnimation");
+                SoundManager.instance.PlayAudio(AudioClipType.cashClip);
                 SoundManager.instance.PlayAudio(AudioClipType.doneClip);
                 brickCollectible.SetActive(false);
                 paintCollectible.SetActive(true);
+                MoneyManager.AddMoney(1000);
+                MoneyManager.UpdateMoneyUI();
 
                 while (productDataList.Count > 0)
                 {
@@ -197,7 +224,7 @@ public class BagController : MonoBehaviour
                     Destroy(itemToDestroy);  // Destroy the GameObject
                     productDataList.RemoveAt(lastIndex);  // Remove the item from the list
                 }
-            
+
                 DOTween.Restart("FadeInOrange");
                 ActivateLayer(orangeBricks);
             }
@@ -207,12 +234,18 @@ public class BagController : MonoBehaviour
             if (currentLayer > 4)
             {
                 AllLayersCompleted();
+                
             }
         }
     }
 
     private void AllLayersCompleted()
     {
+        uiManager.PerformUIActive();
+        DOTween.Restart("MoneyAnimation");
+        MoneyManager.AddMoney(2000);
+        MoneyManager.UpdateMoneyUI();
+        SoundManager.instance.PlayAudio(AudioClipType.cashClip);
         sliderCrane.SetActive(false);
         machineSoundController.StopMachine();
         SoundManager.instance.PlayAudio(AudioClipType.winClip);
@@ -280,7 +313,7 @@ public class BagController : MonoBehaviour
 
     private void ControlBagCapacity()
     {
-        if(productDataList.Count == maxBagCapacity)
+        if (productDataList.Count == maxBagCapacity)
         {
             SetMaxTextOn();
         }
@@ -295,7 +328,7 @@ public class BagController : MonoBehaviour
         {
             maxText.gameObject.SetActive(true);
         }
-  
+
 
     }
     private void SetMaxTextOff()
@@ -304,14 +337,22 @@ public class BagController : MonoBehaviour
         {
             maxText.gameObject.SetActive(false);
         }
-    
+
     }
     public bool IsEmptySpace()
     {
-        if(productDataList.Count < maxBagCapacity)
+        if (productDataList.Count < maxBagCapacity)
         {
             return true;
         }
         return false;
     }
+
+    IEnumerator DeleteTutorUI()
+    {
+        yield return new WaitForSeconds(3f);
+        tutorLiftUI.gameObject.SetActive(false);
+
+    }
+   
 }

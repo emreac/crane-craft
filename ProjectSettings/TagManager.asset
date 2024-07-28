@@ -8,6 +8,7 @@ TagManager:
   - BrickPoint
   - GreenBricks
   - PaintPoint
+  - TutorArrow
   layers:
   - Default
   - TransparentFX
