@@ -6,6 +6,8 @@ using TMPro;
 using System.Collections;
 public class BagController : MonoBehaviour
 {
+
+    [SerializeField] private GameObject nonCollectibleBricks;
     //UI Canvas
     [SerializeField] private GameObject tutorLiftUI;
     [SerializeField] private UIManager uiManager;
@@ -241,6 +243,7 @@ public class BagController : MonoBehaviour
 
     private void AllLayersCompleted()
     {
+        nonCollectibleBricks.SetActive(false);
         uiManager.PerformUIActive();
         DOTween.Restart("MoneyAnimation");
         MoneyManager.AddMoney(2000);
